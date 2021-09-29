@@ -39,6 +39,10 @@ def printMenu():
     print("1- Cargar información en el catálogo")
     print("2- ")
 
+#Funciones de inicialización
+def loadData(catlog):
+    controller.loadData(catalog)
+
 catalog = None
 
 """
@@ -48,8 +52,12 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
-        print("Cargando información de los archivos ....")
-
+        print("Cargando inform(ación de los archivos ....")
+        catalog = controller.initCatalog()
+        controller.loadData(catalog)
+        print("Estos son los artistas",catalog['Artist_id'])
+        print('ESPACIO XD')
+        print("Estas son las obras",catalog['Artwork_id'])
     elif int(inputs[0]) == 2:
         pass
 

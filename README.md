@@ -1,5 +1,7 @@
 #ISIS1225 - Librerias de soporte
 
+Estudiante 1: Nicholas Barake Lacouture(202020664) Correo: n.barake@uniandes.edu.co Estudiante 2: Jesed Alejandro Dominguez Piratova(202011992) Correo: j.dominguezp@uniandes.edu.co
+
 Este proyecto contiene los Tipos abstractos de datos, estructuras de datos y algoritmos requeridos por el curso ISIS1225-Estructuras de Datos y Algoritmos
 
 -Lib

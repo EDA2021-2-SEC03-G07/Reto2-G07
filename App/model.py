@@ -38,8 +38,35 @@ los mismos.
 """
 
 # Construccion de modelos
+def newCatalog():
+    #Son más de 90000 ARTISTAS para el large
+    #Son más de 200000 OBRAS para el large
+    catalog = {'Artist_id': None,
+               'Medium_art':None,
+               'Artwork_id': None}
+
+    catalog['Artist_id'] = mp.newMap(1600, maptype='CHAINING',
+                                    loadfactor=4.0)
+    catalog['Artwork_id'] = mp.newMap(14000, maptype='CHAINING',
+                                    loadfactor=4.0 )
+    catalog['Medium_art'] = mp.newMap(800, maptype='CHAINING',
+                                    loadfactor=4.0 )
+    return catalog
 
 # Funciones para agregar informacion al catalogo
+def addArtist(catalog, artist):
+    if artist["Nationality"] == "":
+        artist["Nationality"]= "Unknown"
+    mp.put(catalog['Artist_id'], artist['ConstituentID'],artist)
+
+def addArtwork(catalog,artwork):
+    if artwork["DateAcquired"] == "":
+        artwork["DateAcquired"] = "1800-01-01"
+    mp.put(catalog['Artwork_id'], artwork['ConstituentID'],artwork)
+
+def addMedium(catalog,artwork):
+    #Toca que configures esto para agregar datos
+    mp.put(catalog['Medium_art'], artwork['ConstituentID'],artwork)
 
 # Funciones para creacion de datos
 
