@@ -29,7 +29,7 @@ import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
-from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.Algorithms.Sorting import mergesort as merge
 assert cf
 
 """
@@ -65,12 +65,46 @@ def addArtwork(catalog,artwork):
     mp.put(catalog['Artwork_id'], artwork['ConstituentID'],artwork)
 
 def addMedium(catalog,artwork):
-    #Toca que configures esto para agregar datos
-    mp.put(catalog['Medium_art'], artwork['ConstituentID'],artwork)
+    if artwork["Medium"] == "":
+        artwork["Medium"]= "Unknown"
+    if mp.contains(catalog["Medium_art"], artwork["Medium"]) == False:
+        listix= lt.newList("ARRAY_LIST")
+        lt.addLast(listix, artwork)
+        mp.put(catalog['Medium_art'], artwork["Medium"], listix)
+    else:
+        llave= artwork["Medium"]
+        pareja= mp.get(catalog["Medium_art"],llave)
+        lt.addLast(me.getValue(pareja),artwork)
 
 # Funciones para creacion de datos
 
+
+
+
+
+# Funciones de comparación
+
+def cmpArtworkByDate(artwork1, artwork2):
+    date1 = artwork1["Date"]
+    date2 = artwork2["Date"]
+    return date1 < date2
+
 # Funciones de consulta
+
+def masAntiguas(catalog,numobras, tecnica):
+    pareja= mp.get(catalog["Medium_art"],tecnica)
+    copia_catalogo= me.getValue(pareja).copy()
+    ordered_list= merge.sort(copia_catalogo, cmpArtworkByDate)
+
+    lista_final= lt.newList('ARRAY_LIST')
+    i= 1
+    while i <= numobras:
+        x = lt.getElement(ordered_list,i)
+        lt.addLast(lista_final, x)
+        i+= 1
+
+    return lista_final
+
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 

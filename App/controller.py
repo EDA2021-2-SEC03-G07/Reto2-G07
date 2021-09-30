@@ -41,6 +41,7 @@ def loadData(catalog):
 
     loadArtist(catalog)
     loadArtwork(catalog)
+    loadMediums(catalog)
 
 # Funciones para creacion de datos
 def loadArtist(catalog):
@@ -54,10 +55,22 @@ def loadArtwork(catalog):
     input_file = csv.DictReader(open(artworkfile, encoding='utf-8'))
     for artwork in input_file:
         model.addArtwork(catalog, artwork)
+
+def loadMediums(catalog):
+    artworkfile = cf.data_dir + 'MoMa/Artworks-utf8-10pct.csv'
+    input_file = csv.DictReader(open(artworkfile, encoding='utf-8'))
+    for artwork in input_file:
+        model.addMedium(catalog,artwork)
+
+
 # Funciones para la carga de datos
 
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+
+def masAntiguas(catalog,numobras,tecnica):
+    info= model.masAntiguas(catalog,numobras,tecnica)
+    return info
 
 #Funciones de comparación

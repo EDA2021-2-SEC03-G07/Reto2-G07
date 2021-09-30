@@ -37,7 +37,7 @@ operación solicitada
 def printMenu():
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
-    print("2- ")
+    print("2- Mostrar n obras más antiguas de una técnica")
 
 #Funciones de inicialización
 def loadData(catlog):
@@ -52,14 +52,21 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
-        print("Cargando inform(ación de los archivos ....")
+        print("Cargando información de los archivos ....")
         catalog = controller.initCatalog()
         controller.loadData(catalog)
         print("Estos son los artistas",catalog['Artist_id'])
         print('ESPACIO XD')
         print("Estas son las obras",catalog['Artwork_id'])
+        print('ESPACIO XD')
+        print("Estas son las obras según las técnicas",catalog["Medium_art"])
+
     elif int(inputs[0]) == 2:
-        pass
+        tecnica= input("Ingrese la técnica de interés: ")
+        numobras= int(input("Ingrese el número de obras más antiguas que utilizan dicha técnica: "))
+
+        listix= controller.masAntiguas(catalog,numobras,tecnica)
+        print(listix)
 
     else:
         sys.exit(0)
