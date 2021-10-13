@@ -25,6 +25,7 @@ import model
 import csv
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
+import re
 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
@@ -42,6 +43,7 @@ def loadData(catalog):
     loadArtist(catalog)
     loadArtwork(catalog)
     loadMediums(catalog)
+    loadNationality(catalog)
 
 # Funciones para creacion de datos
 def loadArtist(catalog):
@@ -61,6 +63,11 @@ def loadMediums(catalog):
     input_file = csv.DictReader(open(artworkfile, encoding='utf-8'))
     for artwork in input_file:
         model.addMedium(catalog,artwork)
+def loadNationality(catalog):
+    artistfile = cf.data_dir + 'MoMa/Artists-utf8-10pct.csv'
+    input_file = csv.DictReader(open(artistfile, encoding='utf-8'))
+    for artist in input_file:
+        model.addNationality(catalog, artist)
 
 
 # Funciones para la carga de datos

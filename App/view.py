@@ -19,14 +19,14 @@
  * You should have received a copy of the GNU General Public License
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
-
 import config as cf
 import sys
 import controller
 from DISClib.ADT import list as lt
 assert cf
-
-
+import re
+from DISClib.ADT import map as mp
+from DISClib.DataStructures import mapentry as me
 """
 La vista se encarga de la interacción con el usuario
 Presenta el menu de opciones y por cada seleccion
@@ -48,6 +48,15 @@ catalog = None
 """
 Menu principal
 """
+a = '[1921,703]'
+b ='1921' 
+a = re.sub("\[|\]", "", a)
+print(a)
+for i in a.split(','):
+    print(i)
+    if '['+b+']' == i:
+        print('YES')
+
 while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
@@ -55,12 +64,14 @@ while True:
         print("Cargando información de los archivos ....")
         catalog = controller.initCatalog()
         controller.loadData(catalog)
-        print("Estos son los artistas",catalog['Artist_id'])
-        print('ESPACIO XD')
-        print("Estas son las obras",catalog['Artwork_id'])
-        print('ESPACIO XD')
-        print("Estas son las obras según las técnicas",catalog["Medium_art"])
-
+        # print("Estos son los artistas",catalog['Artist_id'])
+        # print('ESPACIO XD')
+        #print("Estas son las obras",catalog['Artwork_id'])
+        # print('ESPACIO XD')
+        # print("Estas son las obras según las técnicas",catalog["Medium_art"])
+        #print("Estas son las obras según la nacionalidad",catalog["Nationality"])
+        a = mp.keySet(catalog["Nationality"])
+        print(a)
     elif int(inputs[0]) == 2:
         tecnica= input("Ingrese la técnica de interés: ")
         numobras= int(input("Ingrese el número de obras más antiguas que utilizan dicha técnica: "))
