@@ -32,9 +32,9 @@ El controlador se encarga de mediar entre la vista y el modelo.
 """
 
 # Inicialización del Catálogo de libros
-def initCatalog():
+def initCatalog(metodo,factor):
 
-    catalog = model.newCatalog()
+    catalog = model.newCatalog(metodo,factor)
     return catalog
 
 # Funciones para agregar informacion al catalogo
@@ -62,7 +62,8 @@ def loadMediums(catalog):
     artworkfile = cf.data_dir + 'MoMa/Artworks-utf8-10pct.csv'
     input_file = csv.DictReader(open(artworkfile, encoding='utf-8'))
     for artwork in input_file:
-        model.addMedium(catalog,artwork)
+        model.addMedium(catalog, artwork)
+
 def loadNationality(catalog):
     artistfile = cf.data_dir + 'MoMa/Artists-utf8-10pct.csv'
     input_file = csv.DictReader(open(artistfile, encoding='utf-8'))

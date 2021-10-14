@@ -38,22 +38,22 @@ los mismos.
 """
 
 # Construccion de modelos
-def newCatalog():
+def newCatalog(metodo,factor):
     #Son más de 90000 ARTISTAS para el large
     #Son más de 200000 OBRAS para el large
     catalog = {'Artist_id': None,
+               'Artwork_id': None,
                'Medium_art':None,
-               'Nationality': None,
-               'Artwork_id': None}
+               'Nationalities': None,}
 
     catalog['Artist_id'] = mp.newMap(1600, maptype='CHAINING',
                                     loadfactor=4.0)
     catalog['Artwork_id'] = mp.newMap(14000, maptype='CHAINING',
                                     loadfactor=4.0 )
-    catalog['Nationality'] = mp.newMap(1, maptype='CHAINING',
-                                    loadfactor=4.0 )
-    catalog['Medium_art'] = mp.newMap(800, maptype='CHAINING',
-                                    loadfactor=4.0 )
+    catalog['Medium_art'] = mp.newMap(800, maptype= metodo,
+                                    loadfactor=factor )
+    catalog['Nationalities'] = mp.newMap(1, maptype= metodo,
+                                    loadfactor=factor )
     return catalog
 
 # Funciones para agregar informacion al catalogo
@@ -82,30 +82,29 @@ def addMedium(catalog,artwork):
         lt.addLast(me.getValue(pareja),artwork)
 
 def addNationality(catalog, artist):
-    """a = '[1921],[703]'
-    b = 1921
-    '['+b+']' = [1921]
-    for i in a.split(','):    YA TENGO TODOO PARA REALIZAR LA ADICIÓN DE DATOS
-        print(i)
-        if '[1921]' == i:
-            print('YES')
-            """
     artworks = catalog['Artwork_id']
-    nationality = catalog['Nationality']
+    nationality = catalog['Nationalities']
     if artist['Nationality'] == '':
         artist['Nationality'] = 'Unknown'
     #YA TENGO LA COMPARACION DE LOS CONSTITUENT_ID
     #LO QUE FALTA POR HACER ES QUE SE AGREGUEN CORRECTAMENTE CADA OBRA SEGÚN SU NACIONALIDAD
-    if mp.contains(catalog['Nationality'],artist['Nationality']) == False:
+    if mp.contains(catalog['Nationalities'],artist['Nationality']) == False:
         entry = mp.get(artworks,artist['ConstituentID'])
         if entry != None:
             lista_map = lt.newList('ARRAY_LIST')
             añadir = me.getValue(entry)
             lt.addLast(lista_map, añadir)   
-            mp.put(catalog['Nationality'], artist['Nationality'], lista_map)
+            mp.put(catalog['Nationalities'], artist['Nationality'], lista_map)
+    else:
+        entry = mp.get(artworks,artist['ConstituentID'])
+        if entry != None:
+            añadir = me.getValue(entry)
+            entry2= mp.get(nationality,artist['Nationality'])
+            añadir_lista = me.getValue(entry2)
+            lt.addLast(añadir_lista, añadir)
+
+
 # Funciones para creacion de datos
-
-
 
 
 

@@ -27,6 +27,9 @@ assert cf
 import re
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
+default_limit=1000
+sys.setrecursionlimit(default_limit*10)
+
 """
 La vista se encarga de la interacción con el usuario
 Presenta el menu de opciones y por cada seleccion
@@ -48,30 +51,31 @@ catalog = None
 """
 Menu principal
 """
-a = '[1921,703]'
-b ='1921' 
-a = re.sub("\[|\]", "", a)
-print(a)
-for i in a.split(','):
-    print(i)
-    if '['+b+']' == i:
-        print('YES')
 
 while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
         print("Cargando información de los archivos ....")
-        catalog = controller.initCatalog()
+        metodo=int(input('Seleccione 1 para Probing y 2 para Chaining:\n'))
+        if metodo == 1:
+            metodo = 'PROBING'
+            factor= 0.5
+        if metodo == 2:
+            metodo = 'CHAINING'
+            factor= 4.0
+        catalog = controller.initCatalog(metodo,factor)
         controller.loadData(catalog)
-        # print("Estos son los artistas",catalog['Artist_id'])
-        # print('ESPACIO XD')
-        #print("Estas son las obras",catalog['Artwork_id'])
-        # print('ESPACIO XD')
-        # print("Estas son las obras según las técnicas",catalog["Medium_art"])
-        #print("Estas son las obras según la nacionalidad",catalog["Nationality"])
-        a = mp.keySet(catalog["Nationality"])
+        '''print("Estos son los artistas",catalog['Artist_id'])
+        print('ESPACIO XD')
+        print("Estas son las obras",catalog['Artwork_id'])
+        print('ESPACIO XD')
+        print("Estas son las obras según las técnicas",catalog["Medium_art"])
+        print('ESPACIO XD')'''
+        print("Estas son las obras según la nacionalidad",catalog["Nationalities"])
+        a = mp.keySet(catalog["Nationalities"])
         print(a)
+    
     elif int(inputs[0]) == 2:
         tecnica= input("Ingrese la técnica de interés: ")
         numobras= int(input("Ingrese el número de obras más antiguas que utilizan dicha técnica: "))
