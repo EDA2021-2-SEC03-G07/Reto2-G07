@@ -47,25 +47,25 @@ def loadData(catalog):
 
 # Funciones para creacion de datos
 def loadArtist(catalog):
-    artistfile = cf.data_dir + 'MoMa/Artists-utf8-10pct.csv'
+    artistfile = cf.data_dir + 'MoMa/Artists-utf8-large.csv'
     input_file = csv.DictReader(open(artistfile, encoding='utf-8'))
     for artist in input_file:
         model.addArtist(catalog, artist)
     
 def loadArtwork(catalog):
-    artworkfile = cf.data_dir + 'MoMa/Artworks-utf8-10pct.csv'
+    artworkfile = cf.data_dir + 'MoMa/Artworks-utf8-large.csv'
     input_file = csv.DictReader(open(artworkfile, encoding='utf-8'))
     for artwork in input_file:
         model.addArtwork(catalog, artwork)
 
 def loadMediums(catalog):
-    artworkfile = cf.data_dir + 'MoMa/Artworks-utf8-10pct.csv'
+    artworkfile = cf.data_dir + 'MoMa/Artworks-utf8-large.csv'
     input_file = csv.DictReader(open(artworkfile, encoding='utf-8'))
     for artwork in input_file:
         model.addMedium(catalog, artwork)
 
 def loadNationality(catalog):
-    artistfile = cf.data_dir + 'MoMa/Artists-utf8-10pct.csv'
+    artistfile = cf.data_dir + 'MoMa/Artists-utf8-large.csv'
     input_file = csv.DictReader(open(artistfile, encoding='utf-8'))
     for artist in input_file:
         model.addNationality(catalog, artist)

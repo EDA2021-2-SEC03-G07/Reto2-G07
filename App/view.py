@@ -27,6 +27,7 @@ assert cf
 import re
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
+import time
 default_limit=1000
 sys.setrecursionlimit(default_limit*10)
 
@@ -60,10 +61,11 @@ while True:
         metodo=int(input('Seleccione 1 para Probing y 2 para Chaining:\n'))
         if metodo == 1:
             metodo = 'PROBING'
-            factor= 0.5
+            factor= 0.7
         if metodo == 2:
             metodo = 'CHAINING'
             factor= 4.0
+        start_time= time.process_time()
         catalog = controller.initCatalog(metodo,factor)
         controller.loadData(catalog)
         '''print("Estos son los artistas",catalog['Artist_id'])
@@ -71,10 +73,12 @@ while True:
         print("Estas son las obras",catalog['Artwork_id'])
         print('ESPACIO XD')
         print("Estas son las obras según las técnicas",catalog["Medium_art"])
-        print('ESPACIO XD')'''
-        print("Estas son las obras según la nacionalidad",catalog["Nationalities"])
-        a = mp.keySet(catalog["Nationalities"])
-        print(a)
+        print('ESPACIO XD')
+        print("Estas son las obras según la nacionalidad",catalog["Nationalities"])'''
+        stop_time = time.process_time()
+        elapsed_time_mseg = (stop_time - start_time)*1000
+        print("Tiempo de carga de datos: ", elapsed_time_mseg, "ms")
+
     
     elif int(inputs[0]) == 2:
         tecnica= input("Ingrese la técnica de interés: ")
