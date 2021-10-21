@@ -25,6 +25,7 @@
  """
 
 
+from DISClib.DataStructures.chaininghashtable import put
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
@@ -32,6 +33,8 @@ from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import mergesort as merge
 assert cf
 import re
+import time
+
 """
 Se define la estructura de un catálogo de videos. El catálogo tendrá dos listas, una para los videos, otra para las categorias de
 los mismos.
@@ -49,11 +52,16 @@ def newCatalog(metodo,factor):
     catalog['Artist_id'] = mp.newMap(1600, maptype='CHAINING',
                                     loadfactor=4.0)
     catalog['Artwork_id'] = mp.newMap(14000, maptype='CHAINING',
-                                    loadfactor=4.0 )
+                                    loadfactor=4.0)
     catalog['Medium_art'] = mp.newMap(800, maptype= metodo,
-                                    loadfactor=factor )
-    catalog['Nationalities'] = mp.newMap(1, maptype= metodo,
-                                    loadfactor=factor )
+                                    loadfactor=factor)
+    catalog['Nationalities'] = mp.newMap(195, maptype= metodo,
+                                    loadfactor=factor)
+    catalog['Artist_name'] = mp.newMap(90000, maptype="CHAINING",
+                                    loadfactor= 1.0)
+    catalog["Departments"] = mp.newMap(12, maptype="PROBING",
+                                    loadfactor=0.5)
+    
     return catalog
 
 # Funciones para agregar informacion al catalogo
@@ -62,12 +70,33 @@ def addArtist(catalog, artist):
         artist["Nationality"]= "Unknown"
     mp.put(catalog['Artist_id'], artist['ConstituentID'],artist)
 
+    mp.put(catalog["Artist_name"],artist["DisplayName"],artist["ConstituentID"])
+
 def addArtwork(catalog,artwork):
     if artwork["DateAcquired"] == "":
         artwork["DateAcquired"] = "1800-01-01"
     new_Id = artwork['ConstituentID']
     new_Id = re.sub("\[|\]", "", new_Id)
-    mp.put(catalog['Artwork_id'], new_Id,artwork)
+    #mp.put(catalog['Artwork_id'], new_Id,artwork)
+    if mp.contains(catalog["Artwork_id"],new_Id) == False:
+        obras_id= lt.newList("ARRAY_LIST")
+        lt.addLast(obras_id,artwork)
+        mp.put(catalog['Artwork_id'],new_Id,obras_id)
+    else:
+        entry= mp.get(catalog["Artwork_id"],new_Id)
+        if entry != None:
+            lista= me.getValue(entry)
+            lt.addLast(lista,artwork)
+
+    if mp.contains(catalog["Departments"],artwork["Department"]) == False:
+        obras_dep= lt.newList("ARRAY_LIST")
+        lt.addLast(obras_dep,artwork)
+        mp.put(catalog["Departments"],artwork["Department"],obras_dep)
+    else:
+        entry= mp.get(catalog["Departments"],artwork["Department"])
+        if entry != None:
+            lista= me.getValue(entry)
+            lt.addLast(lista,artwork)
 
 def addMedium(catalog,artwork):
     if artwork["Medium"] == "":
@@ -112,8 +141,22 @@ def addNationality(catalog, artist):
 
 def cmpArtworkByDate(artwork1, artwork2):
     date1 = artwork1["Date"]
+    if date1 == "":
+        date1= "3000"
     date2 = artwork2["Date"]
+    if date1 == "":
+        date1= "3000"
     return date1 < date2
+
+def cmpArtworkByDateAcquired(artwork1, artwork2):
+    date1 = time.strptime(artwork1['DateAcquired'], "%Y-%m-%d")
+    date2 = time.strptime(artwork2['DateAcquired'], "%Y-%m-%d")
+    return date1 < date2
+
+def cmpArtworkByCost(artwork1, artwork2):
+    cost1= artwork1["Cost"]
+    cost2= artwork2["Cost"]
+    return cost1 > cost2
 
 # Funciones de consulta
 
@@ -135,3 +178,157 @@ def masAntiguas(catalog,numobras, tecnica):
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento
+
+
+# Funcion req2
+def artworks_in_range(catalog,inicial,final):
+    lista_obras= mp.valueSet(catalog["Artwork_id"])
+    lista_final_obras= lt.newList("ARRAY_LIST")
+    for lista in lt.iterator(lista_obras):
+        for obra in lt.iterator(lista):
+            lt.addLast(lista_final_obras,obra)
+
+    ordered= merge.sort(lista_final_obras,cmpArtworkByDateAcquired)
+
+    fechainicial= time.strptime(inicial,"%Y-%m-%d")
+    fechafinal= time.strptime(final,"%Y-%m-%d")
+    listix= lt.newList("ARRAY_LIST")
+    for artwork in lt.iterator(ordered):
+        if time.strptime(artwork["DateAcquired"],"%Y-%m-%d") >= fechainicial and time.strptime(artwork["DateAcquired"],"%Y-%m-%d") <= fechafinal:
+            lt.addLast(listix,artwork)
+    
+    cont= 0
+    for artwork in lt.iterator(listix):
+        if artwork["CreditLine"].lower().find("purchase") >= 0:
+            cont+= 1
+
+    primeros3= lt.subList(listix,1,3)
+    ultimos3= lt.subList(listix,-2,3)
+
+    return primeros3, ultimos3, lt.size(listix), cont
+
+
+
+# Funcion req3
+def artist_techniques(catalog,nombre):
+    id= mp.get(catalog["Artist_name"],nombre)
+    constituent= id["value"]
+    obras= mp.get(catalog["Artwork_id"],constituent)
+    totalobras= lt.size(obras["value"])
+
+    mapa_obras_tecnicas= mp.newMap(500, maptype="CHAINING", loadfactor=1.0)
+    dict_contador_tecnicas= {}
+    for obra in lt.iterator(obras["value"]):
+        if obra["Medium"] not in dict_contador_tecnicas.keys():
+            dict_contador_tecnicas[obra["Medium"]]= 1
+        else:
+            dict_contador_tecnicas[obra["Medium"]]+= 1
+
+        if mp.contains(mapa_obras_tecnicas,obra["Medium"]) == False:
+            lista_tecnica= lt.newList("ARRAY_LIST")
+            lt.addLast(lista_tecnica,obra)
+            mp.put(mapa_obras_tecnicas,obra["Medium"],lista_tecnica)
+        else:
+            entry= mp.get(mapa_obras_tecnicas,obra["Medium"])
+            if entry != None:
+                lista= me.getValue(entry)
+                lt.addLast(lista,obra)
+
+    totaltecnicas= mp.size(mapa_obras_tecnicas)
+    toptechnique= max(dict_contador_tecnicas,key=dict_contador_tecnicas.get)
+
+    entry= mp.get(mapa_obras_tecnicas,toptechnique)
+    obras_toptechnique= me.getValue(entry)
+    totaltoptechnique= lt.size(obras_toptechnique)
+
+    primeros3= lt.subList(obras_toptechnique,1,3)
+    ultimos3= lt.subList(obras_toptechnique,-2,3)
+
+    return constituent, totalobras, totaltecnicas, toptechnique, totaltoptechnique, primeros3, ultimos3
+
+
+# Funcion req5
+def transport_artworks(catalog,departamento):
+    lista_departamentos= mp.keySet(catalog["Departments"])
+    for department in lt.iterator(lista_departamentos):
+        if department == departamento:
+            entry= mp.get(catalog["Departments"],department)        
+            obras_departamento= entry["value"]
+
+    totaldepartamento= lt.size(obras_departamento)
+    sorted= merge.sort(obras_departamento,cmpArtworkByDate)
+
+
+    tarifa= 72.00
+    costo_total= 0
+    peso_total= 0
+    for obra in lt.iterator(sorted):
+        weight= obra["Weight (kg)"]
+        width= obra["Width (cm)"]
+        length= obra["Length (cm)"]
+        height= obra["Height (cm)"]
+        diameter = obra["Diameter (cm)"]
+        circumference = obra["Circumference (cm)"]
+        depth = obra["Depth (cm)"]
+
+        if weight != "":
+            kg= float(weight)*tarifa
+            peso_total+= float(weight)
+        else:
+            kg= 0
+
+        if height != "" and width != "":
+            m2= (float(height)/100)*(float(width)/100)*tarifa
+        elif height != "" and length != "":
+            m2= (float(height)/100)*(float(length)/100)*tarifa
+        elif height != "" and depth != "":
+            m2= (float(height)/100)*(float(depth)/100)*tarifa
+        elif length != "" and width != "":
+            m2= (float(length)/100)*(float(width)/100)*tarifa
+        elif length != "" and depth != "":
+            m2= (float(length)/100)*(float(depth)/100)*tarifa
+        elif height != "" and depth != "":
+            m2= (float(height)/100)*(float(depth)/100)*tarifa
+        elif width != "" and depth != "":
+            m2= (float(width)/100)*(float(depth)/100)*tarifa
+        elif circumference != "":
+            m2= (((float(circumference)/100)/(2*3.14))**2)*3.14*tarifa
+        elif diameter != "":
+            m2= (((float(diameter)/100)/2)**2)*3.14*tarifa
+        else:
+            m2= 0
+        
+        if height != "" and width != "" and length != "":
+            m3= (float(height)/100)*(float(width)/100)*(float(length)/100)*tarifa
+        elif height != "" and width != "" and depth != "":
+            m3= (float(height)/100)*(float(width)/100)*(float(depth)/100)*tarifa
+        elif height != "" and length != "" and depth != "":
+            m3= (float(height)/100)*(float(length)/100)*(float(depth)/100)*tarifa
+        elif width != "" and length != "" and depth != "":
+            m3= (float(width)/100)*(float(length)/100)*(float(depth)/100)*tarifa
+        elif diameter != "" and depth != "":
+            m3= (((float(diameter)/100)/2)**2)*3.14*(float(depth)/100)*tarifa
+        elif diameter != "" and height != "":
+            m3= (((float(diameter)/100)/2)**2)*3.14*(float(height)/100)*tarifa
+        elif diameter != "" and width != "":
+            m3= (((float(diameter)/100)/2)**2)*3.14*(float(width)/100)*tarifa
+        elif diameter != "" and length != "":
+            m3= (((float(diameter)/100)/2)**2)*3.14*(float(length)/100)*tarifa
+        else:
+            m3= 0
+
+        costo_maximo= max(kg,m2,m3)
+        if costo_maximo == 0.0:
+            costo_maximo= 48.00
+        
+        costo_total+= costo_maximo
+        obra["Cost"]= round(costo_maximo,2)
+
+    lista_antiguos= lt.subList(sorted,1,5)
+    lista_costosos= merge.sort(sorted.copy(),cmpArtworkByCost)
+    lista_costosos5= lt.subList(lista_costosos,1,5)
+
+
+    return totaldepartamento, round(costo_total,2), peso_total, lista_antiguos, lista_costosos5
+
+

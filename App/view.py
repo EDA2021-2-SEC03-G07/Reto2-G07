@@ -42,6 +42,12 @@ def printMenu():
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
     print("2- Mostrar n obras más antiguas de una técnica")
+    print("3- Listar cronológicamente las obras según fecha adquisición")
+    print("4- Clasificar las obras de un artista por técnica")
+
+
+
+
 
 #Funciones de inicialización
 def loadData(catlog):
@@ -57,7 +63,6 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
-        print("Cargando información de los archivos ....")
         metodo=int(input('Seleccione 1 para Probing y 2 para Chaining:\n'))
         if metodo == 1:
             metodo = 'PROBING'
@@ -65,6 +70,7 @@ while True:
         if metodo == 2:
             metodo = 'CHAINING'
             factor= 4.0
+        print("Cargando información de los archivos ....")
         start_time= time.process_time()
         catalog = controller.initCatalog(metodo,factor)
         controller.loadData(catalog)
@@ -86,6 +92,58 @@ while True:
 
         listix= controller.masAntiguas(catalog,numobras,tecnica)
         print(listix)
+
+    elif int(inputs[0]) == 3:
+        inicial= input("Ingrese la fecha inicial en formato (AAAA-MM-DD): ")
+        final= input("Ingrese la fecha final en formato (AAAA-MM-DD): ")
+
+        info= controller.artworks_in_range(catalog,inicial,final)
+        primeros3= info[0]
+        ultimos3= info[1]
+        size= info[2]
+        purchased= info[3]
+        
+        print("El MoMA adquirió "+ str(size) +" obras entre "+ inicial +" y "+ final +"...")
+        print(str(purchased)+" de los cuales fueron comprados.")
+        print("Las primeras tres obras en el rango son: ")
+        print(primeros3)
+        print("Las últimas tres obras en el rango son: ")
+        print(ultimos3)
+
+    elif int(inputs[0]) == 4:
+        nombre= input("Ingrese el nombre del artista a consultar: ")
+        info= controller.artist_techniques(catalog,nombre)
+        id= info[0]
+        totalobras= info[1]
+        totaltecnicas= info[2]
+        toptechnique= info[3]
+        totaltoptechnique= info[4]
+        primeros3= info[5]
+        ultimos3= info[6]
+        print(nombre+" con ID de MoMA "+ id + " tiene "+ str(totalobras)+" obras con su nombre en el museo...")
+        print("Hay "+ str(totaltecnicas) + " técnicas diferentes en sus obras...")
+        print("Pero su técnica más utilizada es "+ toptechnique + ", encontrada en "+
+                str(totaltoptechnique)+ " de sus obras.")
+        print("Las primeras tres obras con esta técnica son:")
+        print(primeros3)
+        print("Las últimas tres obras con esta técnica son:")
+        print(ultimos3)
+
+
+
+
+
+    elif int(inputs[0]) == 5:
+        departamento= input("Ingrese el nombre del departamento a cotizar: ")
+        info= controller.transport_artworks(catalog,departamento)
+        print("El total de obras para transportar del departamento "+ departamento+" es "+ str(info[0])+"...")
+        print("El costo estimado del servicio de transporte sería "+ str(info[1])+ " USD...")
+        print("Con un peso estimado total de "+ str(info[2]))
+        print("Las cinco obras más antiguas a transportar son...")
+        print(info[3])
+        print("Las cinco obras más costosas a transportar son...")
+        print(info[4])
+
 
     else:
         sys.exit(0)

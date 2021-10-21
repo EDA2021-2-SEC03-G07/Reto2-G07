@@ -47,25 +47,25 @@ def loadData(catalog):
 
 # Funciones para creacion de datos
 def loadArtist(catalog):
-    artistfile = cf.data_dir + 'MoMa/Artists-utf8-large.csv'
+    artistfile = cf.data_dir + 'MoMa/Artists-utf8-10pct.csv'
     input_file = csv.DictReader(open(artistfile, encoding='utf-8'))
     for artist in input_file:
         model.addArtist(catalog, artist)
     
 def loadArtwork(catalog):
-    artworkfile = cf.data_dir + 'MoMa/Artworks-utf8-large.csv'
+    artworkfile = cf.data_dir + 'MoMa/Artworks-utf8-10pct.csv'
     input_file = csv.DictReader(open(artworkfile, encoding='utf-8'))
     for artwork in input_file:
         model.addArtwork(catalog, artwork)
 
 def loadMediums(catalog):
-    artworkfile = cf.data_dir + 'MoMa/Artworks-utf8-large.csv'
+    artworkfile = cf.data_dir + 'MoMa/Artworks-utf8-10pct.csv'
     input_file = csv.DictReader(open(artworkfile, encoding='utf-8'))
     for artwork in input_file:
         model.addMedium(catalog, artwork)
 
 def loadNationality(catalog):
-    artistfile = cf.data_dir + 'MoMa/Artists-utf8-large.csv'
+    artistfile = cf.data_dir + 'MoMa/Artists-utf8-10pct.csv'
     input_file = csv.DictReader(open(artistfile, encoding='utf-8'))
     for artist in input_file:
         model.addNationality(catalog, artist)
@@ -82,3 +82,24 @@ def masAntiguas(catalog,numobras,tecnica):
     return info
 
 #Funciones de comparación
+
+# Funcion req2
+def artworks_in_range(catalog,inicial,final):
+    info= model.artworks_in_range(catalog,inicial,final)
+
+    return info
+
+# Funcion req3
+def artist_techniques(catalog,nombre):
+    info= model.artist_techniques(catalog,nombre)
+
+    return info
+
+
+#Funcion req5
+def transport_artworks(catalog,departamento):
+    info= model.transport_artworks(catalog,departamento)
+
+    return info
+
+
