@@ -26,6 +26,8 @@
 
 
 from DISClib.DataStructures.chaininghashtable import put
+from typing import final
+from DISClib.DataStructures.arraylist import size, subList
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
@@ -44,38 +46,50 @@ los mismos.
 def newCatalog(metodo,factor):
     #Son más de 90000 ARTISTAS para el large
     #Son más de 200000 OBRAS para el large
-    catalog = {'Artist_id': None,
+    catalog = {'Artist': None,
+               'Artwork': None,
+               'Artist_id': None,
                'Artwork_id': None,
                'Medium_art':None,
-               'Nationalities': None,}
+               'Nationalities': None}
 
-    catalog['Artist_id'] = mp.newMap(1600, maptype='CHAINING',
+    catalog['Artist'] = lt.newList('ARRAY_LIST')
+    catalog['Artwork'] = lt.newList()
+
+    artwork_size = lt.size(catalog['Artwork'])
+    artist_size = lt.size(catalog['Artist'])
+
+    catalog['Artist_id'] = mp.newMap(artist_size, maptype='CHAINING',
                                     loadfactor=4.0)
-    catalog['Artwork_id'] = mp.newMap(14000, maptype='CHAINING',
+    catalog['Artwork_id'] = mp.newMap(artwork_size, maptype='CHAINING',
                                     loadfactor=4.0)
-    catalog['Medium_art'] = mp.newMap(800, maptype= metodo,
-                                    loadfactor=factor)
-    catalog['Nationalities'] = mp.newMap(195, maptype= metodo,
-                                    loadfactor=factor)
-    catalog['Artist_name'] = mp.newMap(90000, maptype="CHAINING",
-                                    loadfactor= 1.0)
     catalog["Departments"] = mp.newMap(12, maptype="PROBING",
                                     loadfactor=0.5)
-    
+    catalog['Medium_art'] = mp.newMap(artwork_size, maptype= metodo,
+                                    loadfactor=factor)
+    catalog['Nationalities'] = mp.newMap(artist_size, maptype= metodo,
+                                    loadfactor=factor)
+    catalog['Birthday_artist'] = mp.newMap(artist_size, maptype='CHAINING',
+                                    loadfactor= 4.0)
+    catalog['Artist_name'] = mp.newMap(90000, maptype="CHAINING",
+                                    loadfactor= 1.0)
     return catalog
 
 # Funciones para agregar informacion al catalogo
 def addArtist(catalog, artist):
     if artist["Nationality"] == "":
         artist["Nationality"]= "Unknown"
+    lt.addLast(catalog['Artist'], artist)
     mp.put(catalog['Artist_id'], artist['ConstituentID'],artist)
+    mp.put(catalog["Artist_name"],artist["DisplayName"],artist["ConstituentID"])
 
     mp.put(catalog["Artist_name"],artist["DisplayName"],artist["ConstituentID"])
 
 def addArtwork(catalog,artwork):
+    lt.addLast(catalog['Artwork'], artwork)
     if artwork["DateAcquired"] == "":
         artwork["DateAcquired"] = "1800-01-01"
-    new_Id = artwork['ConstituentID']
+    new_Id = artwork['ConstituentID']   
     new_Id = re.sub("\[|\]", "", new_Id)
     #mp.put(catalog['Artwork_id'], new_Id,artwork)
     if mp.contains(catalog["Artwork_id"],new_Id) == False:
@@ -132,11 +146,6 @@ def addNationality(catalog, artist):
             añadir_lista = me.getValue(entry2)
             lt.addLast(añadir_lista, añadir)
 
-
-# Funciones para creacion de datos
-
-
-
 # Funciones de comparación
 
 def cmpArtworkByDate(artwork1, artwork2):
@@ -157,6 +166,11 @@ def cmpArtworkByCost(artwork1, artwork2):
     cost1= artwork1["Cost"]
     cost2= artwork2["Cost"]
     return cost1 > cost2
+def cmpbirthday(artist1, artist2):
+    return int(artist1['BeginDate']) < int(artist2['BeginDate'])
+
+def cmptop(top1, top2):
+    return int(top1['#Obras']) > int(top2['#Obras'])
 
 # Funciones de consulta
 
@@ -174,7 +188,94 @@ def masAntiguas(catalog,numobras, tecnica):
 
     return lista_final
 
+def req1(catalog, lowdate, highdate):
+    lt_artist = catalog['Artist']
+    sorted_artist = lt.newList()
+    final_list = lt.newList()
+    for date in lt.iterator(lt_artist):
+        if int(date['BeginDate']) >= lowdate and int(date['BeginDate']) <= highdate:
+            lt.addLast(sorted_artist,date)
+    sorted_artist = merge.sort(sorted_artist,cmpbirthday)
+    for element in lt.iterator(sorted_artist):
+        if element['EndDate'] == '0':
+            element['EndDate'] = 'Unknown'
+        dict_print = {}
+        dict_print['Nombre'] = element['DisplayName']
+        dict_print['Nacimiento'] = element['BeginDate']
+        dict_print['Fallecimiento'] = element['EndDate']
+        dict_print['Nacionalidad'] = element['Nationality']
+        dict_print['Género'] = element['Gender']
+        lt.addLast(final_list,dict_print)
+    return final_list
+#Requerimiento 3 por Nicholas
+def artist_techniques(catalog,nombre):
+    id= mp.get(catalog["Artist_name"],nombre)
+    constituent= id["value"]
+    obras= mp.get(catalog["Artwork_id"],constituent)
+    totalobras= lt.size(obras["value"])
 
+    mapa_obras_tecnicas= mp.newMap(500, maptype="CHAINING", loadfactor=1.0)
+    dict_contador_tecnicas= {}
+    for obra in lt.iterator(obras["value"]):
+        if obra["Medium"] not in dict_contador_tecnicas.keys():
+            dict_contador_tecnicas[obra["Medium"]]= 1
+        else:
+            dict_contador_tecnicas[obra["Medium"]]+= 1
+
+        if mp.contains(mapa_obras_tecnicas,obra["Medium"]) == False:
+            lista_tecnica= lt.newList("ARRAY_LIST")
+            lt.addLast(lista_tecnica,obra)
+            mp.put(mapa_obras_tecnicas,obra["Medium"],lista_tecnica)
+        else:
+            entry= mp.get(mapa_obras_tecnicas,obra["Medium"])
+            if entry != None:
+                lista= me.getValue(entry)
+                lt.addLast(lista,obra)
+
+    totaltecnicas= mp.size(mapa_obras_tecnicas)
+    toptechnique= max(dict_contador_tecnicas,key=dict_contador_tecnicas.get)
+
+    entry= mp.get(mapa_obras_tecnicas,toptechnique)
+    obras_toptechnique= me.getValue(entry)
+    totaltoptechnique= lt.size(obras_toptechnique)
+
+    primeros3= lt.subList(obras_toptechnique,1,3)
+    ultimos3= lt.subList(obras_toptechnique,-2,3)
+
+    return constituent, totalobras, totaltecnicas, toptechnique, totaltoptechnique, primeros3, ultimos3
+
+#Requerimiento 4 por Jesed
+def req4(catalog):
+    #No sé que hacer con el artworks xd
+    countrys = catalog['Nationalities']
+    #top_list = mp.newMap(mp.size(countrys),maptype='CHAINING',loadfactor=4.0)
+    top_list = lt.newList()
+    lista_countrys = mp.keySet(countrys)
+    for actual_c in lt.iterator(lista_countrys):
+        llave_valor = mp.get(countrys,actual_c)['value']
+        size_country = 0
+        for index in lt.iterator(llave_valor):
+            size = lt.size(index)
+            size_country += size
+        agregar = {'Nacionalidad':actual_c,
+                    '#Obras': size_country}
+        #mp.put(top_list,actual_c,size_country)
+        lt.addLast(top_list, agregar)
+    top_ord = top_list
+    top_ord = merge.sort(top_ord,cmptop)
+    final_lt = lt.newList()
+    i = 0
+    for top in lt.iterator(top_ord):
+        while i < 10:
+            lt.addLast(final_lt, top)
+            i += 1
+    for top1 in range(0,1):
+        top1 = lt.getElement(final_lt,top1)
+        top1 = mp.get(countrys, top1['Nacionalidad'])
+    return top1
+
+def req6(Número_Artist, lowdate, highdate):
+ pass
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento

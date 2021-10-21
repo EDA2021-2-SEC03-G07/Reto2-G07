@@ -30,7 +30,7 @@ from DISClib.DataStructures import mapentry as me
 import time
 default_limit=1000
 sys.setrecursionlimit(default_limit*10)
-
+import time
 """
 La vista se encarga de la interacción con el usuario
 Presenta el menu de opciones y por cada seleccion
@@ -50,9 +50,35 @@ def printMenu():
 
 
 #Funciones de inicialización
-def loadData(catlog):
+def loadData(catalog):
     controller.loadData(catalog)
 
+def printreq1(ord_list):
+    size_list = lt.size(ord_list)
+    print('El número de artistas dentro del rango es:',size_list)
+    sub_list = lt.subList(ord_list, 0, lt.size(ord_list))
+    print('Los primeros tres artistas son: ')
+    for i in range(2,5):
+        element = lt.getElement(sub_list,i)
+        print(element)
+    print('')
+    print('Los últimos tres artistas son: ')
+    for i in range(0,3):
+        element = lt.removeLast(sub_list)
+        print(element)
+
+def printreq4(obras_top):
+    obras = me.getValue(obras_top)
+    sub_list = lt.subList(obras,0,lt.size(obras))
+    print('Los primeros 3 buckets son:')
+    for i in range(0,3):
+        element = lt.getElement(sub_list,i)
+        print(element)
+    print('')
+    print('Los últimos 3 buckets son: ')
+    for i in range(0,3):
+        element = lt.removeLast(sub_list)
+        print(element)
 catalog = None
 
 """
@@ -84,6 +110,9 @@ while True:
         stop_time = time.process_time()
         elapsed_time_mseg = (stop_time - start_time)*1000
         print("Tiempo de carga de datos: ", elapsed_time_mseg, "ms")
+        print('El tiempo de ejecución para las nacionalidades es: ')
+        print('')
+        print('El tiempo de ejecución para los medios es: ')
 
     
     elif int(inputs[0]) == 2:
@@ -145,6 +174,15 @@ while True:
         print(info[4])
 
 
+    elif int(inputs[0]) == 3:
+        lowdate = int(input('Ingrese la fecha mínima: \n'))
+        highdate = int(input('Ingrese la fecha máxima: \n'))
+        req1 = controller.req1(catalog,lowdate,highdate)
+        final = printreq1(req1)
+        print(final)
+    elif int(inputs[0]) == 4:
+        req4 = controller.req4(catalog)
+        final = printreq4(req4)
     else:
         sys.exit(0)
 sys.exit(0)

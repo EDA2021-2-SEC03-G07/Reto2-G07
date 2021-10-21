@@ -26,7 +26,7 @@ import csv
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 import re
-
+import time
 """
 El controlador se encarga de mediar entre la vista y el modelo.
 """
@@ -42,8 +42,9 @@ def loadData(catalog):
 
     loadArtist(catalog)
     loadArtwork(catalog)
-    loadMediums(catalog)
     loadNationality(catalog)
+    loadMediums(catalog)
+
 
 # Funciones para creacion de datos
 def loadArtist(catalog):
@@ -62,8 +63,7 @@ def loadMediums(catalog):
     artworkfile = cf.data_dir + 'MoMa/Artworks-utf8-10pct.csv'
     input_file = csv.DictReader(open(artworkfile, encoding='utf-8'))
     for artwork in input_file:
-        model.addMedium(catalog, artwork)
-
+       model.addMedium(catalog, artwork)
 def loadNationality(catalog):
     artistfile = cf.data_dir + 'MoMa/Artists-utf8-10pct.csv'
     input_file = csv.DictReader(open(artistfile, encoding='utf-8'))
@@ -80,6 +80,22 @@ def loadNationality(catalog):
 def masAntiguas(catalog,numobras,tecnica):
     info= model.masAntiguas(catalog,numobras,tecnica)
     return info
+
+def req1(catalog, lowdate,highdate):
+    start_time = time.process_time()
+    resultado = model.req1(catalog,lowdate,highdate)
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000
+    print('El tiempo fue que tardó: ', elapsed_time_mseg, 'ms')
+    return resultado
+
+def req4(catalog):
+    start_time = time.process_time()
+    resultado = model.req4(catalog)
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000
+    print('El tiempo fue que tardó: ', elapsed_time_mseg, 'ms')
+    return resultado
 
 #Funciones de comparación
 
