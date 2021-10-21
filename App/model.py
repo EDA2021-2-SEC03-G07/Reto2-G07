@@ -26,7 +26,7 @@
 
 
 from DISClib.DataStructures.chaininghashtable import put
-from typing import final
+#from typing import final
 from DISClib.DataStructures.arraylist import size, subList
 import config as cf
 from DISClib.ADT import list as lt
@@ -59,20 +59,20 @@ def newCatalog(metodo,factor):
     artwork_size = lt.size(catalog['Artwork'])
     artist_size = lt.size(catalog['Artist'])
 
-    catalog['Artist_id'] = mp.newMap(artist_size, maptype='CHAINING',
-                                    loadfactor=4.0)
-    catalog['Artwork_id'] = mp.newMap(artwork_size, maptype='CHAINING',
-                                    loadfactor=4.0)
-    catalog["Departments"] = mp.newMap(12, maptype="PROBING",
-                                    loadfactor=0.5)
+    catalog['Artist_id'] = mp.newMap(artist_size, maptype=metodo,
+                                    loadfactor=factor)
+    catalog['Artwork_id'] = mp.newMap(artwork_size, maptype=metodo,
+                                    loadfactor=factor)
+    catalog["Departments"] = mp.newMap(12, maptype=metodo,
+                                    loadfactor=factor)
     catalog['Medium_art'] = mp.newMap(artwork_size, maptype= metodo,
                                     loadfactor=factor)
     catalog['Nationalities'] = mp.newMap(artist_size, maptype= metodo,
                                     loadfactor=factor)
-    catalog['Birthday_artist'] = mp.newMap(artist_size, maptype='CHAINING',
-                                    loadfactor= 4.0)
-    catalog['Artist_name'] = mp.newMap(90000, maptype="CHAINING",
-                                    loadfactor= 1.0)
+    catalog['Birthday_artist'] = mp.newMap(artist_size, maptype=metodo,
+                                    loadfactor= factor)
+    catalog['Artist_name'] = mp.newMap(artist_size, maptype=metodo,
+                                    loadfactor= factor )
     return catalog
 
 # Funciones para agregar informacion al catalogo
@@ -207,42 +207,6 @@ def req1(catalog, lowdate, highdate):
         dict_print['Género'] = element['Gender']
         lt.addLast(final_list,dict_print)
     return final_list
-#Requerimiento 3 por Nicholas
-def artist_techniques(catalog,nombre):
-    id= mp.get(catalog["Artist_name"],nombre)
-    constituent= id["value"]
-    obras= mp.get(catalog["Artwork_id"],constituent)
-    totalobras= lt.size(obras["value"])
-
-    mapa_obras_tecnicas= mp.newMap(500, maptype="CHAINING", loadfactor=1.0)
-    dict_contador_tecnicas= {}
-    for obra in lt.iterator(obras["value"]):
-        if obra["Medium"] not in dict_contador_tecnicas.keys():
-            dict_contador_tecnicas[obra["Medium"]]= 1
-        else:
-            dict_contador_tecnicas[obra["Medium"]]+= 1
-
-        if mp.contains(mapa_obras_tecnicas,obra["Medium"]) == False:
-            lista_tecnica= lt.newList("ARRAY_LIST")
-            lt.addLast(lista_tecnica,obra)
-            mp.put(mapa_obras_tecnicas,obra["Medium"],lista_tecnica)
-        else:
-            entry= mp.get(mapa_obras_tecnicas,obra["Medium"])
-            if entry != None:
-                lista= me.getValue(entry)
-                lt.addLast(lista,obra)
-
-    totaltecnicas= mp.size(mapa_obras_tecnicas)
-    toptechnique= max(dict_contador_tecnicas,key=dict_contador_tecnicas.get)
-
-    entry= mp.get(mapa_obras_tecnicas,toptechnique)
-    obras_toptechnique= me.getValue(entry)
-    totaltoptechnique= lt.size(obras_toptechnique)
-
-    primeros3= lt.subList(obras_toptechnique,1,3)
-    ultimos3= lt.subList(obras_toptechnique,-2,3)
-
-    return constituent, totalobras, totaltecnicas, toptechnique, totaltoptechnique, primeros3, ultimos3
 
 #Requerimiento 4 por Jesed
 def req4(catalog):

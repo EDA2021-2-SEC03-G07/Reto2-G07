@@ -39,33 +39,36 @@ def initCatalog(metodo,factor):
 
 # Funciones para agregar informacion al catalogo
 def loadData(catalog):
-
+    start_time = time.process_time()
     loadArtist(catalog)
     loadArtwork(catalog)
     loadNationality(catalog)
     loadMediums(catalog)
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000
+    print('El tiempo que tardó: ', elapsed_time_mseg, 'ms')
 
 
 # Funciones para creacion de datos
 def loadArtist(catalog):
-    artistfile = cf.data_dir + 'MoMa/Artists-utf8-10pct.csv'
+    artistfile = cf.data_dir + 'MoMa/Artists-utf8-large.csv'
     input_file = csv.DictReader(open(artistfile, encoding='utf-8'))
     for artist in input_file:
         model.addArtist(catalog, artist)
     
 def loadArtwork(catalog):
-    artworkfile = cf.data_dir + 'MoMa/Artworks-utf8-10pct.csv'
+    artworkfile = cf.data_dir + 'MoMa/Artworks-utf8-large.csv'
     input_file = csv.DictReader(open(artworkfile, encoding='utf-8'))
     for artwork in input_file:
         model.addArtwork(catalog, artwork)
 
 def loadMediums(catalog):
-    artworkfile = cf.data_dir + 'MoMa/Artworks-utf8-10pct.csv'
+    artworkfile = cf.data_dir + 'MoMa/Artworks-utf8-large.csv'
     input_file = csv.DictReader(open(artworkfile, encoding='utf-8'))
     for artwork in input_file:
        model.addMedium(catalog, artwork)
 def loadNationality(catalog):
-    artistfile = cf.data_dir + 'MoMa/Artists-utf8-10pct.csv'
+    artistfile = cf.data_dir + 'MoMa/Artists-utf8-large.csv'
     input_file = csv.DictReader(open(artistfile, encoding='utf-8'))
     for artist in input_file:
         model.addNationality(catalog, artist)
@@ -79,6 +82,7 @@ def loadNationality(catalog):
 
 def masAntiguas(catalog,numobras,tecnica):
     info= model.masAntiguas(catalog,numobras,tecnica)
+    
     return info
 
 def req1(catalog, lowdate,highdate):
@@ -86,7 +90,8 @@ def req1(catalog, lowdate,highdate):
     resultado = model.req1(catalog,lowdate,highdate)
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
-    print('El tiempo fue que tardó: ', elapsed_time_mseg, 'ms')
+    print('El tiempo que tardó: ', elapsed_time_mseg, 'ms')
+    
     return resultado
 
 def req4(catalog):
@@ -94,28 +99,41 @@ def req4(catalog):
     resultado = model.req4(catalog)
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
-    print('El tiempo fue que tardó: ', elapsed_time_mseg, 'ms')
+    print('El tiempo que tardó: ', elapsed_time_mseg, 'ms')
+    
     return resultado
 
 #Funciones de comparación
 
 # Funcion req2
 def artworks_in_range(catalog,inicial,final):
+    start_time = time.process_time()
     info= model.artworks_in_range(catalog,inicial,final)
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000
+    print('El tiempo que tardó: ', elapsed_time_mseg, 'ms')
 
     return info
 
 # Funcion req3
 def artist_techniques(catalog,nombre):
+    start_time = time.process_time()
     info= model.artist_techniques(catalog,nombre)
-
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000
+    print('El tiempo que tardó: ', elapsed_time_mseg, 'ms')
+    
     return info
 
 
 #Funcion req5
 def transport_artworks(catalog,departamento):
+    start_time = time.process_time()
     info= model.transport_artworks(catalog,departamento)
-
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000
+    print('El tiempo que tardó: ', elapsed_time_mseg, 'ms')
+    
     return info
 
 

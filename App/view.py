@@ -42,11 +42,11 @@ def printMenu():
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
     print("2- Mostrar n obras más antiguas de una técnica")
-    print("3- Listar cronológicamente las obras según fecha adquisición")
-    print("4- Clasificar las obras de un artista por técnica")
-
-
-
+    print("3- Listar cronológicamnete los artistas")
+    print("4- Listar cronológicamente las obras según fecha adquisición")
+    print("5- Clasificar las obras de un artista por técnica")
+    print("6- Clasificar las obras por nacionalidad de artistas")
+    print("7- Estimar servicio de transporte para obras de departamento")
 
 
 #Funciones de inicialización
@@ -79,6 +79,8 @@ def printreq4(obras_top):
     for i in range(0,3):
         element = lt.removeLast(sub_list)
         print(element)
+
+
 catalog = None
 
 """
@@ -106,13 +108,13 @@ while True:
         print('ESPACIO XD')
         print("Estas son las obras según las técnicas",catalog["Medium_art"])
         print('ESPACIO XD')
-        print("Estas son las obras según la nacionalidad",catalog["Nationalities"])'''
+        print("Estas son las obras según la nacionalidad",catalog["Nationalities"])
         stop_time = time.process_time()
         elapsed_time_mseg = (stop_time - start_time)*1000
         print("Tiempo de carga de datos: ", elapsed_time_mseg, "ms")
         print('El tiempo de ejecución para las nacionalidades es: ')
         print('')
-        print('El tiempo de ejecución para los medios es: ')
+        print('El tiempo de ejecución para los medios es: ')'''
 
     
     elif int(inputs[0]) == 2:
@@ -122,7 +124,7 @@ while True:
         listix= controller.masAntiguas(catalog,numobras,tecnica)
         print(listix)
 
-    elif int(inputs[0]) == 3:
+    elif int(inputs[0]) == 4:
         inicial= input("Ingrese la fecha inicial en formato (AAAA-MM-DD): ")
         final= input("Ingrese la fecha final en formato (AAAA-MM-DD): ")
 
@@ -139,7 +141,7 @@ while True:
         print("Las últimas tres obras en el rango son: ")
         print(ultimos3)
 
-    elif int(inputs[0]) == 4:
+    elif int(inputs[0]) == 5:
         nombre= input("Ingrese el nombre del artista a consultar: ")
         info= controller.artist_techniques(catalog,nombre)
         id= info[0]
@@ -158,11 +160,7 @@ while True:
         print("Las últimas tres obras con esta técnica son:")
         print(ultimos3)
 
-
-
-
-
-    elif int(inputs[0]) == 5:
+    elif int(inputs[0]) == 7:
         departamento= input("Ingrese el nombre del departamento a cotizar: ")
         info= controller.transport_artworks(catalog,departamento)
         print("El total de obras para transportar del departamento "+ departamento+" es "+ str(info[0])+"...")
@@ -173,14 +171,14 @@ while True:
         print("Las cinco obras más costosas a transportar son...")
         print(info[4])
 
-
     elif int(inputs[0]) == 3:
         lowdate = int(input('Ingrese la fecha mínima: \n'))
         highdate = int(input('Ingrese la fecha máxima: \n'))
         req1 = controller.req1(catalog,lowdate,highdate)
         final = printreq1(req1)
         print(final)
-    elif int(inputs[0]) == 4:
+    
+    elif int(inputs[0]) == 6:
         req4 = controller.req4(catalog)
         final = printreq4(req4)
     else:
